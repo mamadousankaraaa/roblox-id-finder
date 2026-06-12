@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roblox ID Finder</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:linear-gradient(135deg,#050816,#0b1026);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.card{
+    width:500px;
+    background:rgba(20,20,40,0.95);
+    border:1px solid #7c3aed;
+    border-radius:20px;
+    padding:30px;
+    box-shadow:0 0 40px rgba(124,58,237,.35);
+}
+
+h1{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.purple{
+    color:#a855f7;
+}
+
+.input-box{
+    display:flex;
+    gap:10px;
+}
+
+input{
+    flex:1;
+    padding:15px;
+    border:none;
+    outline:none;
+    border-radius:12px;
+    background:#111827;
+    color:white;
+    font-size:16px;
+}
+
+button{
+    padding:15px 25px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(90deg,#9333ea,#6366f1);
+    color:white;
+    cursor:pointer;
+    font-weight:600;
+    transition:.2s;
+}
+
+button:hover{
+    transform:scale(1.05);
+}
+
+.profile{
+    margin-top:25px;
+    display:none;
+    text-align:center;
+}
+
+.avatar{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    border:4px solid #a855f7;
+    object-fit:cover;
+}
+
+.username{
+    font-size:28px;
+    font-weight:700;
+    margin-top:15px;
+}
+
+.userid{
+    color:#a855f7;
+    margin-top:10px;
+    font-weight:600;
+}
+
+.error{
+    color:#ff4d4d;
+    margin-top:20px;
+    text-align:center;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+
+    <h1>Roblox <span class="purple">ID Finder</span></h1>
+
+    <div class="input-box">
+        <input type="text" id="username" placeholder="Pseudo Roblox">
+        <button onclick="searchUser()">Chercher</button>
+    </div>
+
+    <div id="error" class="error"></div>
+
+    <div class="profile" id="profile">
+        <img id="avatar" class="avatar">
+        <div class="username" id="displayName"></div>
+        <div id="userTag"></div>
+        <div class="userid" id="userId"></div>
+    </div>
+
+</div>
+
+<script>
+async function searchUser() {
+
+    const username = document.getElementById("username").value;
+    const error = document.getElementById("error");
+    const profile = document.getElementById("profile");
+
+    error.textContent = "";
+    profile.style.display = "none";
+
+    try {
+
+        const res = await fetch(
+            "https://users.roblox.com/v1/usernames/users",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    usernames:[username],
+                    excludeBannedUsers:false
+                })
+            }
+        );
+
+        const data = await res.json();
+
+        if(!data.data.length){
+            error.textContent = "Utilisateur introuvable.";
+            return;
+        }
+
+        const user = data.data[0];
+
+        const avatarRes = await fetch(
+            `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${user.id}&size=420x420&format=Png&isCircular=false`
+        );
+
+        const avatarData = await avatarRes.json();
+
+        document.getElementById("avatar").src =
+            avatarData.data[0].imageUrl;
+
+        document.getElementById("displayName").textContent =
+            user.name;
+
+        document.getElementById("userTag").textContent =
+            "@" + user.name;
+
+        document.getElementById("userId").textContent =
+            "ID : " + user.id;
+
+        profile.style.display = "block";
+
+    } catch(err){
+        error.textContent = "Erreur lors de la recherche.";
+    }
+}
+</script>
+
+</body>
+</html>
