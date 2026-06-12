@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -69,6 +70,10 @@ button{
     font-weight:600;
 }
 
+button:hover{
+    opacity:0.9;
+}
+
 .profile{
     margin-top:25px;
     display:none;
@@ -100,6 +105,11 @@ button{
     margin-top:20px;
     text-align:center;
 }
+
+#copyBtn{
+    display:none;
+    margin-top:15px;
+}
 </style>
 </head>
 <body>
@@ -120,6 +130,10 @@ button{
         <div class="username" id="displayName"></div>
         <div id="userTag"></div>
         <div class="userid" id="userId"></div>
+
+        <button id="copyBtn">
+            📋 Copier l'ID
+        </button>
     </div>
 
 </div>
@@ -154,6 +168,8 @@ async function searchUser() {
         document.getElementById("avatar").src =
         `https://www.roblox.com/headshot-thumbnail/image?userId=${user.id}&width=420&height=420&format=png`;
 
+        document.getElementById("copyBtn").style.display = "inline-block";
+
         profile.style.display = "block";
 
     } catch(err){
@@ -161,7 +177,25 @@ async function searchUser() {
         console.error(err);
     }
 }
+
+document.getElementById("copyBtn").addEventListener("click", () => {
+
+    const idText = document.getElementById("userId").textContent;
+    const id = idText.replace("ID : ", "");
+
+    navigator.clipboard.writeText(id);
+
+    const btn = document.getElementById("copyBtn");
+
+    btn.textContent = "✅ ID copié !";
+
+    setTimeout(() => {
+        btn.textContent = "📋 Copier l'ID";
+    }, 2000);
+});
 </script>
 
 </body>
 </html>
+```
+
