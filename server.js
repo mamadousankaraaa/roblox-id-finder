@@ -5,6 +5,10 @@ const app = express();
 
 app.use(cors());
 
+app.get("/", (req, res) => {
+    res.send("Serveur Roblox ID Finder actif !");
+});
+
 app.get("/user/:username", async (req, res) => {
     try {
         const response = await fetch(
@@ -23,7 +27,7 @@ app.get("/user/:username", async (req, res) => {
 
         const data = await response.json();
 
-        if (!data.data || !data.data.length) {
+        if (!data.data || data.data.length === 0) {
             return res.status(404).json({
                 error: "Utilisateur introuvable"
             });
@@ -38,4 +42,8 @@ app.get("/user/:username", async (req, res) => {
     }
 });
 
-app.listen(process.env.PORT || 3000);
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Serveur lancé sur le port ${PORT}`);
+});
